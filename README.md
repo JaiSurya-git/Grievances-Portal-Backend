@@ -2,7 +2,6 @@
 
 Backend for the **College Grievance Redressal System**. Students report grievances through the **Student Portal**, and Students Union admins review and resolve them through the separate **Admin Portal**. Both portals talk to this one backend, which stores everything in a single MongoDB database.
 
-> **New here?** Read this file top to bottom once. It explains what every folder and file does, how a request travels through the code, and how to run the project.
 
 ---
 
