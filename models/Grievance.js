@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { GRIEVANCE_STATUSES } = require('../utils/constants');
 
 // Sub-schema for tracking timeline changes
 const actionHistorySchema = new mongoose.Schema({
@@ -7,9 +8,11 @@ const actionHistorySchema = new mongoose.Schema({
     ref: 'Admin',
     required: true
   },
+  
   status: {
-    type: String,
-    required: true
+  type: String,
+  enum: GRIEVANCE_STATUSES,
+  default: 'Submitted'
   },
   remark: {
     type: String,
@@ -38,7 +41,8 @@ const grievanceSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    required: true
+    required: true,
+    enum: GRIEVANCE_CATEGORIES
   },
   status: {
     type: String,
