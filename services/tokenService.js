@@ -1,16 +1,21 @@
 const jwt = require('jsonwebtoken');
 
-// Encrypts user details 
+const getSecret = () => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not configured');
+    }
+    return process.env.JWT_SECRET;
+};
+
 const generateToken = (payload) => {
-    return jwt.sign(payload, process.env.JWT_SECRET || 'your_secret_key', {
-        expiresIn: '1d',
+    return jwt.sign(payload, getSecret(), {
+        expiresIn: '1d'
     });
 };
 
-// JWT token
 const verifyToken = (token) => {
     try {
-        return jwt.verify(token, process.env.JWT_SECRET || 'your_secret_key');
+        return jwt.verify(token, getSecret());
     } catch (error) {
         return null;
     }
