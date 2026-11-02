@@ -1,29 +1,30 @@
+const Grievance = require('../models/Grievance');
 const { generateGrievanceId } = require('./idService');
 const { appendHistoryEntry } = require('./historyService');
 
-const grievancesDatabase = [];
+const createGrievance = async (studentData, studentId) => {
+    const grievanceId = await generateGrievanceId();
 
-const createGrievance = (studentData, studentId) => {
-    const grievanceId = generateGrievanceId();
-
-    let newGrievance = {
+    const grievance = new Grievance({
         grievanceId,
         studentId,
         title: studentData.title,
         description: studentData.description,
-        status: 'PENDING',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        history: []
-    };
+        category: studentData.category,
+        concernedPerson: studentData.concernedPerson,
+        status: 'Submitted',
+        actionHistory: []
+    });
 
-    newGrievance = appendHistoryEntry(newGrievance, "Grievance submitted by student.", "Student");
-    grievancesDatabase.push(newGrievance);
+    appendHistoryEntry(
+        grievance,
+        'Grievance submitted by student',
+        studentId,
+        'student',
+        'Submitted'
+    );
 
-    return newGrievance;
+    return await grievance.save();
 };
 
-module.exports = {
-    createGrievance,
-    grievancesDatabase
-};
+module.exports = { createGrievance };

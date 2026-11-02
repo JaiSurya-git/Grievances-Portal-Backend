@@ -1,18 +1,21 @@
-const appendHistoryEntry = (grievance, action, updatedBy) => {
-    if (!grievance.history) {
-        grievance.history = [];
-    }
-
-    const newLog = {
+const appendHistoryEntry = (
+    grievance,
+    action,
+    updatedBy,
+    updatedByRole,
+    status,
+    remark = ''
+) => {
+    grievance.actionHistory.push({
         action,
         updatedBy,
-        timestamp: new Date()
-    };
+        updatedByRole,
+        status,
+        remark,
+        updatedAt: new Date()
+    });
 
-    grievance.history.push(newLog);
     return grievance;
 };
 
-module.exports = {
-    appendHistoryEntry
-};
+module.exports = { appendHistoryEntry };
