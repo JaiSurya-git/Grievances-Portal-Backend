@@ -1,0 +1,22 @@
+const { createGrievance, grievancesDatabase } = require('./services/grievanceService');
+
+const mockStudentData1 = {
+    title: "Library AC not working",
+    description: "The air conditioning on the 3rd floor has been broken for two weeks."
+};
+
+const mockStudentData2 = {
+    title: "Incorrect grade entry",
+    description: "My mid-term mark for Web Development is showing incorrectly."
+};
+
+console.log("--- Submitting First Grievance ---");
+const firstResult = createGrievance(mockStudentData1, "STUDENT_123");
+console.log(JSON.stringify(firstResult, null, 2));
+
+console.log("\n--- Submitting Second Grievance ---");
+const secondResult = createGrievance(mockStudentData2, "STUDENT_456");
+console.log(JSON.stringify(secondResult, null, 2));
+
+console.log("\n--- Full Database State ---");
+console.log(JSON.stringify(grievancesDatabase, null, 2));
