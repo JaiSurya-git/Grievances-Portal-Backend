@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 const {
     GRIEVANCE_STATUSES,
@@ -28,6 +29,33 @@ const actionHistorySchema = new mongoose.Schema({
         trim: true
     },
     updatedAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const attachmentSchema = new mongoose.Schema({
+    originalName: {
+        type: String,
+        required: true
+    },
+    fileName: {
+        type: String,
+        required: true
+    },
+    filePath: {
+        type: String,
+        required: true
+    },
+    mimeType: {
+        type: String,
+        required: true
+    },
+    size: {
+        type: Number,
+        required: true
+    },
+    uploadedAt: {
         type: Date,
         default: Date.now
     }
@@ -68,6 +96,7 @@ const grievanceSchema = new mongoose.Schema({
         enum: GRIEVANCE_STATUSES,
         default: 'Submitted'
     },
+    attachments: [attachmentSchema],
     actionHistory: [actionHistorySchema]
 }, { timestamps: true });
 

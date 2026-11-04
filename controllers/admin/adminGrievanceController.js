@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 const Grievance = require('../../models/Grievance');
+const path = require('path');
+const fs = require('fs');
 
 const { appendHistoryEntry } = require('../../services/historyService');
 const { isValidTransition } = require('../../services/statusService');
-const { GRIEVANCE_STATUSES, GRIEVANCE_CATEGORIES } = require('../../utils/constants');
+const {
+    GRIEVANCE_STATUSES,
+    GRIEVANCE_CATEGORIES
+} = require('../../utils/constants');
 
 // Helper: find grievance using either MongoDB ID or grievance ID
 const findGrievance = async (id) => {
@@ -15,7 +20,6 @@ const findGrievance = async (id) => {
 
     return Grievance.findOne({ $or: conditions });
 };
-
 
 // 1. Get all grievances with optional filters
 const getAllGrievances = async (req, res, next) => {
@@ -45,7 +49,10 @@ const getAllGrievances = async (req, res, next) => {
         }
 
         if (search) {
-            const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const escapedSearch = search.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                '\\$&'
+            );
 
             filter.$or = [
                 { grievanceId: { $regex: escapedSearch, $options: 'i' } },
@@ -68,7 +75,6 @@ const getAllGrievances = async (req, res, next) => {
     }
 };
 
-
 // 2. Get one grievance
 const getOneGrievance = async (req, res, next) => {
     try {
@@ -88,7 +94,6 @@ const getOneGrievance = async (req, res, next) => {
         next(error);
     }
 };
-
 
 // 3. Add a remark
 const addRemark = async (req, res, next) => {
@@ -130,7 +135,6 @@ const addRemark = async (req, res, next) => {
     }
 };
 
-
 // 4. Update grievance status
 const updateStatus = async (req, res, next) => {
     try {
@@ -143,8 +147,10 @@ const updateStatus = async (req, res, next) => {
             });
         }
 
-        if (remark !== undefined &&
-            (typeof remark !== 'string' || !remark.trim())) {
+        if (
+            remark !== undefined &&
+            (typeof remark !== 'string' || !remark.trim())
+        ) {
             return res.status(400).json({
                 message: 'Remark must be a non-empty string'
             });
@@ -189,10 +195,50 @@ const updateStatus = async (req, res, next) => {
     }
 };
 
+// 5. Download grievance attachment (Admin)
+const downloadAttachment = async (req, res, next) => {
+    try {
+        const grievance = await findGrievance(req.params.id);
+
+        if (!grievance) {
+            return res.status(404).json({
+                message: 'Grievance not found'
+            });
+        }
+
+        const attachment = grievance.attachments.id(
+            req.params.attachmentId
+        );
+
+        if (!attachment) {
+            return res.status(404).json({
+                message: 'Attachment not found'
+            });
+        }
+
+        const filePath = path.join(
+            __dirname,
+            '../../uploads',
+            attachment.fileName
+        );
+
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({
+                message: 'Attachment file not found'
+            });
+        }
+
+        res.download(filePath, attachment.originalName);
+
+    } catch (error) {
+        next(error);
+    }
+};
 
 module.exports = {
     getAllGrievances,
     getOneGrievance,
     addRemark,
-    updateStatus
+    updateStatus,
+    downloadAttachment
 };

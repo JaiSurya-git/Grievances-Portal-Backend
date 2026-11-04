@@ -5,7 +5,8 @@ const {
     getAllGrievances,
     getOneGrievance,
     addRemark,
-    updateStatus
+    updateStatus,
+    downloadAttachment
 } = require('../../controllers/admin/adminGrievanceController');
 
 const authenticate = require('../../middleware/authenticate');
@@ -17,5 +18,8 @@ router.get('/', getAllGrievances);
 router.get('/:id', getOneGrievance);
 router.post('/:id/remarks', addRemark);
 router.patch('/:id/status', updateStatus);
+
+// Download grievance attachment (Admin)
+router.get('/:id/attachment/:attachmentId', downloadAttachment);
 
 module.exports = router;
